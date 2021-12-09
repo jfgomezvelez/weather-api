@@ -24,10 +24,10 @@ public class MessagePattern {
     private RabbitTemplate rabbitTemplate;
 
     @RabbitListener(bindings = @QueueBinding(value = @Queue(
-            value = "weather.request.queue"
+            value = "weather.query.queue"
     ),
-            exchange = @Exchange(value = "weather.request.exchange", type = ExchangeTypes.TOPIC),
-            key = "weather.request")
+            exchange = @Exchange(value = "weather.exchange", type = ExchangeTypes.TOPIC),
+            key = "weather.query")
     )
     public void receive(Message message, Channel channel) {
         log.info("Recibiendo mensaje ".concat(new String(message.getBody())).concat(" messageId ").concat(message.getMessageProperties().getMessageId()));
@@ -40,7 +40,9 @@ public class MessagePattern {
                 "    \"timezone\": \"America/Bogota\",\n" +
                 "    \"tzoffset\": -5.0,\n" +
                 "    \"description\": \"Similar temperatures continuing with a chance of rain multiple days.\"\n" +
-                "}", message.getMessageProperties().getMessageId());
+                "}",
+                message.getMessageProperties().getMessageId(),
+                message.getMessageProperties().getReplyTo());
         try {
             if (result) {
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
@@ -52,12 +54,10 @@ public class MessagePattern {
         }
     }
 
-    public boolean send(String message, String messageId) {
+    public boolean send(String message, String messageId, String destination) {
         log.info("Enviando evento "
                 .concat(message)
-                .concat(" a ").concat("weather.response.exchange")
-                .concat(":")
-                .concat("weather.response"));
+                .concat(" a ").concat(destination));
 
         byte[] data = message.getBytes(StandardCharsets.UTF_8);
 
@@ -65,7 +65,7 @@ public class MessagePattern {
         messageProperties.setMessageId(messageId);
 
         Message messageToSend = new Message(data, messageProperties);
-        rabbitTemplate.convertAndSend("weather.response.exchange", "weather.response", messageToSend);
+        rabbitTemplate.convertAndSend("weather.exchange", destination, messageToSend);
         return true;
     }
 }
