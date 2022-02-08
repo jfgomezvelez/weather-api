@@ -1,7 +1,5 @@
 package co.edu.eafit;
 
-import co.edu.eafit.mongodb.StatisticRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
