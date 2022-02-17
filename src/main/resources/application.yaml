@@ -16,6 +16,9 @@ spring:
     password: guest
     username: guest
     virtual_host: /
+    listener:
+      simple:
+        prefetch: 500
 #  data:
 #    mongodb:
 #      uri:  ${MONGO_URL}
