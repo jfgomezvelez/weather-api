@@ -31,7 +31,7 @@ public class MessagePattern {
     )
     public void receive(Message message, Channel channel) {
         log.info("Recibiendo mensaje ".concat(new String(message.getBody())).concat(" messageId ").concat(message.getMessageProperties().getMessageId()));
-        send(createMessage3(), message.getMessageProperties().getMessageId());
+        send(createMessage1(), message.getMessageProperties().getMessageId());
     }
 
     public boolean send(String message, String messageId) {
